@@ -10,7 +10,7 @@
  *  - Wind arrow length is zero (or near-zero) when wind is zero
  *
  * Constants (from spec/refinement):
- *   WIND_AMPLITUDE  = 0.3
+ *   WIND_AMPLITUDE  = 0.08   ← tweaked from 0.3 so wind is subtle vs gravity
  *   WIND_FREQUENCY  = 0.02   (multiplier on frameCount inside sin)
  */
 
@@ -26,8 +26,9 @@ const {
 // Constants
 // ---------------------------------------------------------------------------
 describe('Wind constants', () => {
-  test('WIND_AMPLITUDE is 0.3', () => {
-    expect(WIND_AMPLITUDE).toBeCloseTo(0.3);
+  test('WIND_AMPLITUDE is 0.08 (tweaked – wind must be subtle vs gravity)', () => {
+    // spec: amplitude changed from 0.3 → 0.08 so wind is not dominant
+    expect(WIND_AMPLITUDE).toBeCloseTo(0.08);
   });
 
   test('WIND_FREQUENCY is 0.02', () => {
@@ -39,10 +40,10 @@ describe('Wind constants', () => {
 // calculateWind
 // ---------------------------------------------------------------------------
 describe('calculateWind(frameCount)', () => {
-  test('returns sin(frameCount * 0.02) * 0.3', () => {
+  test('returns sin(frameCount * 0.02) * 0.08', () => {
     // Arrange
     const frame = 50;
-    const expected = Math.sin(frame * 0.02) * 0.3;
+    const expected = Math.sin(frame * 0.02) * 0.08;
 
     // Act
     const result = calculateWind(frame);
@@ -57,6 +58,12 @@ describe('calculateWind(frameCount)', () => {
 
     const result = calculateWind(frame);
     expect(result).toBeGreaterThan(0);
+  });
+
+  test('maximum wind force (amplitude) is significantly less than gravity (0.5)', () => {
+    // spec: wind amplitude 0.08 must be clearly smaller than gravity 0.5
+    // so the ball falls mainly downward, not sideways
+    expect(WIND_AMPLITUDE).toBeLessThan(0.5 * 0.5); // max wind < half of gravity
   });
 
   test('returns negative value when sin is negative (right-to-left wind)', () => {
@@ -79,26 +86,26 @@ describe('applyWind(velocity, windForce)', () => {
   test('positive wind increases horizontal velocity', () => {
     // Arrange
     const velocity = { x: 0, y: 0 };
-    const wind = 0.3;
+    const wind = 0.08; // updated amplitude
 
     // Act
     const result = applyWind(velocity, wind);
 
     // Assert
-    expect(result.x).toBeCloseTo(0.3);
+    expect(result.x).toBeCloseTo(0.08);
     expect(result.y).toBeCloseTo(0); // vertical unaffected
   });
 
   test('negative wind decreases (reverses) horizontal velocity', () => {
     // Arrange
     const velocity = { x: 1, y: 0 };
-    const wind = -0.3;
+    const wind = -0.08; // updated amplitude
 
     // Act
     const result = applyWind(velocity, wind);
 
     // Assert
-    expect(result.x).toBeCloseTo(0.7);
+    expect(result.x).toBeCloseTo(0.92);
     expect(result.y).toBeCloseTo(0);
   });
 
@@ -134,7 +141,7 @@ describe('applyWind(velocity, windForce)', () => {
 describe('getWindArrow(windForce)', () => {
   test('arrow points right (positive dx) when wind is positive', () => {
     // Arrange
-    const wind = 0.3;
+    const wind = 0.08; // updated amplitude
 
     // Act
     const arrow = getWindArrow(wind);
@@ -145,7 +152,7 @@ describe('getWindArrow(windForce)', () => {
 
   test('arrow points left (negative dx) when wind is negative', () => {
     // Arrange
-    const wind = -0.3;
+    const wind = -0.08; // updated amplitude
 
     // Act
     const arrow = getWindArrow(wind);
@@ -165,10 +172,16 @@ describe('getWindArrow(windForce)', () => {
     expect(Math.abs(arrow.dx)).toBeCloseTo(0);
   });
 
+  test('arrow length with amplitude 0.08 and scale 100 is at most 8px', () => {
+    // spec: max arrow = 0.08 * 100 = 8px (was 30px at amplitude 0.3)
+    const arrow = getWindArrow(WIND_AMPLITUDE);
+    expect(Math.abs(arrow.dx)).toBeCloseTo(8);
+  });
+
   test('stronger wind produces a longer arrow', () => {
     // Arrange
-    const strongWind = 0.3;
-    const weakWind = 0.1;
+    const strongWind = 0.08;
+    const weakWind = 0.04;
 
     // Act
     const strongArrow = getWindArrow(strongWind);

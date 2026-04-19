@@ -1,33 +1,66 @@
 // pi-demo-p5js — main sketch
 // Logic lives in src/ modules; this file wires them into the p5.js draw loop.
 
-let ball;
+// In Node.js (Jest) environment, import Ball; in browser it is a global.
+const _Ball = typeof Ball !== 'undefined'
+  ? Ball
+  : (typeof require !== 'undefined' ? require('./ball').Ball : undefined);
+
+/**
+ * Spawn a new Ball at (x, y) and push it onto the balls array.
+ * Clicks outside the canvas bounds are silently ignored.
+ *
+ * @param {Ball[]} balls         Mutable array of active balls
+ * @param {number} x             Click x-coordinate (mouseX)
+ * @param {number} y             Click y-coordinate (mouseY)
+ * @param {number} canvasWidth   Canvas width in pixels
+ * @param {number} canvasHeight  Canvas height in pixels
+ */
+function spawnBallOnClick(balls, x, y, canvasWidth, canvasHeight) {
+  if (x < 0 || x > canvasWidth || y < 0 || y > canvasHeight) return;
+  const BallClass = typeof Ball !== 'undefined' ? Ball : _Ball;
+  balls.push(new BallClass({ x, y }, { x: 0, y: 0 }));
+}
+
+// ---------------------------------------------------------------------------
+// p5.js lifecycle – only runs in the browser
+// ---------------------------------------------------------------------------
+let balls = [];
 
 function setup() {
   createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-  ball = new Ball(
+  // Seed with one ball in the centre so the canvas is not empty on load
+  balls.push(new Ball(
     { x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2 },
     { x: 2, y: 0 }
-  );
+  ));
 }
 
 function draw() {
   background(15, 17, 23);
 
-  // --- Physics update ---
   const windForce = calculateWind(frameCount);
-  ball.velocity = applyWind(ball.velocity, windForce);
-  ball.update();
-  ball.checkBounds();
 
-  // --- Draw ball ---
-  noStroke();
-  fill(100, 180, 255);
-  ellipse(ball.position.x, ball.position.y, BALL_RADIUS * 2, BALL_RADIUS * 2);
+  for (const ball of balls) {
+    // --- Physics update ---
+    ball.velocity = applyWind(ball.velocity, windForce);
+    ball.update();
+    ball.checkBounds();
+
+    // --- Draw ball ---
+    noStroke();
+    fill(100, 180, 255);
+    ellipse(ball.position.x, ball.position.y, BALL_RADIUS * 2, BALL_RADIUS * 2);
+  }
 
   // --- Draw wind arrow with label ---
   const arrow = getWindArrow(windForce);
   drawWindArrow(arrow.dx);
+}
+
+/** Spawn a new ball at the mouse position when the canvas is clicked. */
+function mousePressed() {
+  spawnBallOnClick(balls, mouseX, mouseY, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 /**
@@ -63,4 +96,9 @@ function drawWindArrow(dx) {
   textSize(12);
   textAlign(LEFT, BOTTOM);
   text('Wind', ORIGIN_X, ORIGIN_Y - 4);
+}
+
+// Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
+if (typeof module !== 'undefined') {
+  module.exports = { spawnBallOnClick };
 }

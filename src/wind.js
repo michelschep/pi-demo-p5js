@@ -5,11 +5,11 @@
  *   windForce = sin(frameCount * WIND_FREQUENCY) * WIND_AMPLITUDE
  *
  * Constants follow the spec:
- *   WIND_AMPLITUDE  = 0.3
+ *   WIND_AMPLITUDE  = 0.08   ← tweaked from 0.3 so wind is subtle vs gravity (spec change)
  *   WIND_FREQUENCY  = 0.02
  */
 
-const WIND_AMPLITUDE = 0.3;
+const WIND_AMPLITUDE = 0.08;
 const WIND_FREQUENCY = 0.02;
 
 /**
