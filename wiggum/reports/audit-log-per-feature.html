@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum — audit-log-per-feature</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;padding:0 20px;background:#0d1117;color:#c9d1d9}
+  h1{color:#58a6ff}
+  .back-link{display:inline-block;margin-bottom:20px;color:#58a6ff;text-decoration:none;font-size:.9em}
+  .back-link:hover{text-decoration:underline}
+  .phase{border:1px solid #30363d;border-radius:6px;margin:16px 0}
+  .phase-header{padding:12px 16px;border-bottom:1px solid #30363d}
+  .phase-body{padding:12px 16px}
+  .phase h3{margin:0 0 10px;font-size:.9em;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.8em;font-weight:600}
+  .badge.approved,.badge.done,.badge.ok,.badge.green{background:#1a4731;color:#3fb950}
+  .badge.failed,.badge.red{background:#4d1a1a;color:#f85149}
+  .badge.needs-work,.badge.yellow{background:#3d2a00;color:#d29922}
+  table{width:100%;border-collapse:collapse;font-size:.88em;margin-top:8px}
+  th{text-align:left;padding:6px 8px;background:#161b22;color:#8b949e;border-bottom:1px solid #30363d}
+  td{padding:6px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .severity-error{color:#f85149;font-weight:600}
+  .severity-warning{color:#d29922}
+  .meta{color:#8b949e;font-size:.85em}
+  code{background:#161b22;padding:1px 5px;border-radius:4px;font-size:.9em}
+  ul{margin:4px 0;padding-left:20px}
+  li{margin:2px 0;font-size:.9em}
+</style>
+</head>
+<body>
+
+<!-- Task 1.3: back-link to index page -->
+<a class="back-link" href="../report.html">← Terug naar overzicht</a>
+
+<h1>🦆 audit-log-per-feature</h1>
+<p class="meta">
+  Commit: <code>abc1234</code> &nbsp;·&nbsp;
+  Run date: 2026-04-19 16:45 (Amsterdam) &nbsp;·&nbsp;
+  <span class="badge green">green</span>
+</p>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Why</h3>
+<p>Per elke Wiggum-run wordt een losstaand HTML-bestand gegenereerd op het pad wiggum/reports/<feature-name>.html, zodat elke feature zijn eigen auditrapport heeft met secties Why, What, How, Pipeline, Demo en Retrospective. report.html fungeert als index-pagina.</p>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>What — Capabilities</h3>
+<table>
+  <tr><th>Capability</th><th>Requirements</th><th>Scenarios</th></tr>
+    <tr><td>wiggum-audit-report</td><td>3</td><td>7</td></tr>
+</table>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>How — Task Groups</h3>
+
+  <p><strong>Task Group 1 — Per-feature report</strong></p>
+  <ul>
+    <li>1.1 — Ensure wiggum/reports/ directory exists ✅</li>
+    <li>1.2 — Write standalone HTML to wiggum/reports/&lt;feature-name&gt;.html ✅</li>
+    <li>1.3 — Add title and back-link to generated files ✅</li>
+  </ul>
+
+  <p><strong>Task Group 2 — Amsterdam timezone</strong></p>
+  <ul>
+    <li>2.1 — Wire formatAmsterdam into generateFeatureReport.mjs ✅</li>
+    <li>2.2 — Format runDate as Amsterdam timestamp in per-feature header ✅</li>
+    <li>2.3 — Show Amsterdam date+time in Run Date column of index table ✅</li>
+  </ul>
+
+  <p><strong>Task Group 3 — Index page</strong></p>
+  <ul>
+    <li>3.1 — Remove details blocks from report.html ✅</li>
+    <li>3.2 — Build report.html by reading all wiggum/reports/*.html ✅</li>
+    <li>3.3 — Each row in index table links to reports/&lt;feature-name&gt;.html ✅</li>
+  </ul>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Pipeline</h3>
+<table>
+  <tr><th>Phase</th><th>Status</th></tr>
+    <tr><td>✅ refinement</td><td>done</td></tr>
+    <tr><td>✅ tdd</td><td>done</td></tr>
+    <tr><td>✅ developer</td><td>done</td></tr>
+    <tr><td>✅ tdd_check</td><td>done</td></tr>
+    <tr><td>✅ runtime</td><td>done</td></tr>
+    <tr><td>✅ reviewer</td><td>done</td></tr>
+    <tr><td>🔄 demo</td><td>running</td></tr>
+    <tr><td>⬜ git</td><td>idle</td></tr>
+    <tr><td>⬜ retrospective</td><td>idle</td></tr>
+</table>
+
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Demo</h3>
+<table>
+  <tr><th>Scenario</th><th>Result</th><th>Notes</th></tr>
+    <tr><td>Per-feature bestand aangemaakt</td><td><span class="badge pass">pass</span></td><td>wiggum/reports/audit-log-per-feature.html exists with all 6 sections</td></tr>
+    <tr><td>Rapport is standalone</td><td><span class="badge pass">pass</span></td><td>File is self-contained HTML with all sections inline</td></tr>
+    <tr><td>report.html is een index</td><td><span class="badge pass">pass</span></td><td>Index table shows feature rows with links, date+time, commit, health</td></tr>
+    <tr><td>Samenvatting toont alle taken</td><td><span class="badge pass">pass</span></td><td>Summary section shows task rows with health badges and recommendations</td></tr>
+    <tr><td>Tijdstempel toont lokale Amsterdam-tijd</td><td><span class="badge pass">pass</span></td><td>Header shows Amsterdam timestamp format</td></tr>
+    <tr><td>Index-tabel toont datum en tijd</td><td><span class="badge pass">pass</span></td><td>Run Date column shows Amsterdam date+time format</td></tr>
+</table>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Retrospective</h3>
+<p><strong>Wins</strong></p>
+<ul>
+    <li>All 92 tests pass (0 failures)</li>
+    <li>formatAmsterdam correctly handles CET/CEST timezone switching</li>
+    <li>generateIndexReport builds index from existing HTML files robustly</li>
+    <li>buildFeatureHtml renders all 6 required sections in correct order</li>
+    <li>Back-link and title present in all per-feature reports</li>
+</ul>
+<table>
+  <tr><th>Phase</th><th>Severity</th><th>Issue</th><th>Fix</th></tr>
+    <tr><td>review</td><td class="severity-warning">warning</td><td>Tasks 1.1-1.3 checkboxes not ticked in tasks.md</td><td>Administrative oversight — code is correct and functional</td></tr>
+    <tr><td>review</td><td class="severity-warning">warning</td><td>Base64 screenshot embedding not implemented</td><td>Task gap — no corresponding task in tasks.md</td></tr>
+</table>
+<p><strong>Recommendations</strong></p>
+<ul>
+    <li>Add base64 screenshot embedding to make reports truly standalone</li>
+    <li>Add section id=summary wrapper with Top Recommendation column</li>
+    <li>Tick checkboxes in tasks.md to reflect implementation state</li>
+</ul>
+<p><strong>Top recommendation:</strong> Add base64 screenshot embedding so reports are truly portable without external file dependencies.</p>
+</div>
+</div>
+
+</body>
+</html>

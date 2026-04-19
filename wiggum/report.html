@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum Audit Log</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;padding:0 20px;background:#0d1117;color:#c9d1d9}
+  h1{color:#58a6ff}
+  .meta{color:#8b949e;font-size:.85em;margin-bottom:24px}
+  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.8em;font-weight:600}
+  .badge.approved,.badge.done,.badge.ok,.badge.green{background:#1a4731;color:#3fb950}
+  .badge.failed,.badge.red{background:#4d1a1a;color:#f85149}
+  .badge.needs-work,.badge.yellow{background:#3d2a00;color:#d29922}
+  table{width:100%;border-collapse:collapse;font-size:.88em}
+  th{text-align:left;padding:6px 8px;background:#161b22;color:#8b949e;border-bottom:1px solid #30363d}
+  td{padding:6px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  a{color:#58a6ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{background:#161b22;padding:1px 5px;border-radius:4px;font-size:.9em}
+</style>
+</head>
+<body>
+<h1>🦆 Wiggum Audit Log</h1>
+<p class="meta">Gegenereerd op: 2026-04-19 16:45 (Amsterdam)</p>
+
+<!-- Tasks 3.1/3.2: pure index built from wiggum/reports/ — no accordion blocks -->
+<table>
+  <tr>
+    <th>Feature</th>
+    <!-- Task 2.3: Run Date column shows Amsterdam-timezone date+time -->
+    <th>Run Date</th>
+    <th>Commit</th>
+    <th>Health</th>
+  </tr>
+    <tr>
+      <td><a href="reports/audit-log-per-feature.html">audit-log-per-feature</a></td>
+      <td>2026-04-19 16:45 (Amsterdam)</td>
+      <td><code>abc1234</code></td>
+      <td><span class="badge green">green</span></td>
+    </tr>
+    <tr>
+      <td><a href="reports/test-feature.html">test-feature</a></td>
+      <td>2026-04-19 16:41 (Amsterdam)</td>
+      <td><code>abc1234</code></td>
+      <td><span class="badge idle">green</span></td>
+    </tr>
+</table>
+
+<!-- FIX #1: summary section — fully regenerated on every run -->
+<section id="summary">
+<h2>📋 Summary</h2>
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Health</th>
+    <th>Top Recommendation</th>
+  </tr>
+    <tr>
+      <td><a href="reports/audit-log-per-feature.html">audit-log-per-feature</a></td>
+      <td>🟢</td>
+      <td>Add base64 screenshot embedding so reports are truly portable without external file dependencies.</td>
+    </tr>
+    <tr>
+      <td><a href="reports/test-feature.html">test-feature</a></td>
+      <td>🟢</td>
+      <td>All good</td>
+    </tr>
+</table>
+</section>
+
+</body>
+</html>

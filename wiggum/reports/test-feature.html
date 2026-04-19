@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum — test-feature</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;padding:0 20px;background:#0d1117;color:#c9d1d9}
+  h1{color:#58a6ff}
+  .back-link{display:inline-block;margin-bottom:20px;color:#58a6ff;text-decoration:none;font-size:.9em}
+  .back-link:hover{text-decoration:underline}
+  .phase{border:1px solid #30363d;border-radius:6px;margin:16px 0}
+  .phase-header{padding:12px 16px;border-bottom:1px solid #30363d}
+  .phase-body{padding:12px 16px}
+  .phase h3{margin:0 0 10px;font-size:.9em;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.8em;font-weight:600}
+  .badge.approved,.badge.done,.badge.ok,.badge.green{background:#1a4731;color:#3fb950}
+  .badge.failed,.badge.red{background:#4d1a1a;color:#f85149}
+  .badge.needs-work,.badge.yellow{background:#3d2a00;color:#d29922}
+  table{width:100%;border-collapse:collapse;font-size:.88em;margin-top:8px}
+  th{text-align:left;padding:6px 8px;background:#161b22;color:#8b949e;border-bottom:1px solid #30363d}
+  td{padding:6px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .severity-error{color:#f85149;font-weight:600}
+  .severity-warning{color:#d29922}
+  .meta{color:#8b949e;font-size:.85em}
+  code{background:#161b22;padding:1px 5px;border-radius:4px;font-size:.9em}
+  ul{margin:4px 0;padding-left:20px}
+  li{margin:2px 0;font-size:.9em}
+</style>
+</head>
+<body>
+
+<!-- Task 1.3: back-link to index page -->
+<a class="back-link" href="../report.html">← Terug naar overzicht</a>
+
+<h1>🦆 test-feature</h1>
+<p class="meta">
+  Commit: <code>abc1234</code> &nbsp;·&nbsp;
+  Run date: 2026-04-19 16:41 (Amsterdam) &nbsp;·&nbsp;
+  <span class="badge idle">green</span>
+</p>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Why</h3>
+<p>Test why</p>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>What — Capabilities</h3>
+<table>
+  <tr><th>Capability</th><th>Requirements</th><th>Scenarios</th></tr>
+    <tr><td>cap1</td><td>2</td><td>3</td></tr>
+</table>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>How — Task Groups</h3>
+
+  <p><strong>Group 1</strong></p>
+  <ul>
+    <li>1.1 — Do thing ✅</li>
+    <li>1.2 — Other thing</li>
+  </ul>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Pipeline</h3>
+<table>
+  <tr><th>Phase</th><th>Status</th></tr>
+    <tr><td>✅ refinement</td><td>done</td></tr>
+    <tr><td>✅ tdd</td><td>done</td></tr>
+    <tr><td>✅ developer</td><td>done</td></tr>
+</table>
+
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Demo</h3>
+<table>
+  <tr><th>Scenario</th><th>Result</th><th>Notes</th></tr>
+  <tr><td colspan="3">—</td></tr>
+</table>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-body">
+<h3>Retrospective</h3>
+
+
+
+<p><strong>Top recommendation:</strong> All good</p>
+</div>
+</div>
+
+</body>
+</html>
