@@ -14,6 +14,39 @@ const BALL_RADIUS = 20;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
 
+/**
+ * Convert HSB (Hue-Saturation-Brightness) to an RGB object.
+ *
+ * Task 1.1 — hsbToRgb helper
+ *
+ * @param {number} h  Hue in degrees (0–360)
+ * @param {number} s  Saturation (0–1)
+ * @param {number} v  Brightness / Value (0–1)
+ * @returns {{ r: number, g: number, b: number }}  Each component in 0–255
+ */
+function hsbToRgb(h, s, v) {
+  // Normalise hue to [0, 360)
+  h = ((h % 360) + 360) % 360;
+
+  const c = v * s;           // chroma
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = v - c;
+
+  let r1, g1, b1;
+  if      (h < 60)  { r1 = c; g1 = x; b1 = 0; }
+  else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+  else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+  else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+  else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+  else              { r1 = c; g1 = 0; b1 = x; }
+
+  return {
+    r: Math.round((r1 + m) * 255),
+    g: Math.round((g1 + m) * 255),
+    b: Math.round((b1 + m) * 255),
+  };
+}
+
 class Ball {
   /**
    * @param {{ x: number, y: number }} position  Initial position
@@ -22,6 +55,9 @@ class Ball {
   constructor(position, velocity) {
     this.position = { x: position.x, y: position.y };
     this.velocity = { x: velocity.x, y: velocity.y };
+
+    // Task 1.2 — assign a unique random color at construction time
+    this.color = hsbToRgb(Math.random() * 360, 0.8, 0.9);
   }
 
   /** Add gravity to vertical velocity (one frame). */
@@ -120,5 +156,5 @@ class Ball {
 
 // Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
-  module.exports = { Ball, GRAVITY, DAMPING, BALL_RADIUS, CANVAS_WIDTH, CANVAS_HEIGHT };
+  module.exports = { Ball, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, CANVAS_WIDTH, CANVAS_HEIGHT };
 }
