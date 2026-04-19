@@ -53,6 +53,13 @@ function draw() {
     ellipse(ball.position.x, ball.position.y, BALL_RADIUS * 2, BALL_RADIUS * 2);
   }
 
+  // --- Resolve ball–ball collisions (unique pairs only) ---
+  for (let i = 0; i < balls.length; i++) {
+    for (let j = i + 1; j < balls.length; j++) {
+      balls[i].resolveCollision(balls[j]);
+    }
+  }
+
   // --- Draw wind arrow with label ---
   const arrow = getWindArrow(windForce);
   drawWindArrow(arrow.dx);

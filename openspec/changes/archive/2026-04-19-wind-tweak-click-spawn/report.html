@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum Audit Log — wind-tweak-click-spawn</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; }
+  h1 { color: #58a6ff; }
+  details { border: 1px solid #30363d; border-radius: 6px; margin: 16px 0; }
+  summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 1.05em; background: #161b22; border-radius: 6px; list-style: none; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary { border-radius: 6px 6px 0 0; }
+  .phase { padding: 12px 16px; border-top: 1px solid #30363d; }
+  .phase h3 { margin: 0 0 8px; font-size: 0.95em; color: #8b949e; text-transform: uppercase; letter-spacing: .05em; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .badge.approved, .badge.done, .badge.ok, .badge.green { background: #1a4731; color: #3fb950; }
+  .badge.failed { background: #4d1a1a; color: #f85149; }
+  .badge.needs-work { background: #3d2a00; color: #d29922; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88em; margin-top: 8px; }
+  th { text-align: left; padding: 6px 8px; background: #161b22; color: #8b949e; border-bottom: 1px solid #30363d; }
+  td { padding: 6px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .severity-error { color: #f85149; font-weight: 600; }
+  .severity-warning { color: #d29922; }
+  .img-thumb { max-width: 160px; border: 1px solid #30363d; border-radius: 4px; }
+  code { background: #161b22; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  .meta { color: #8b949e; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<h1>🦆 Wiggum Audit Log — wind-tweak-click-spawn</h1>
+
+<details open>
+  <summary>
+    <span>feat(wind): reduce wind amplitude and add click-to-spawn balls &nbsp;·&nbsp; <code>597c5dc</code></span>
+    <span style="color:#3fb950">✅ green</span>
+  </summary>
+
+  <!-- REFINEMENT -->
+  <div class="phase">
+    <h3>🔍 Refinement</h3>
+    <span class="badge approved">approved</span>
+    <p>Stack: p5.js. Affected files: <code>src/wind.js</code>, <code>src/sketch.js</code>. All acceptance criteria testable &amp; specific. No blocking gaps found.</p>
+  </div>
+
+  <!-- TDD -->
+  <div class="phase">
+    <h3>🧪 TDD — Failing Tests</h3>
+    <span class="badge ok">ok</span>
+    <table>
+      <tr><th>File</th><th>Tests</th><th>Coverage</th></tr>
+      <tr><td><code>__tests__/wind-force.test.js</code></td><td>4 failing</td><td>WIND_AMPLITUDE=0.08, formula, subtlety vs gravity, arrow ≤8px</td></tr>
+      <tr><td><code>__tests__/click-to-spawn.test.js</code></td><td>14 failing</td><td>In-bounds spawn (5), out-of-bounds guard (4), multi-ball (5)</td></tr>
+    </table>
+    <p class="meta">Total: 18 failing tests — all confirmed failing before implementation.</p>
+  </div>
+
+  <!-- DEVELOPER -->
+  <div class="phase">
+    <h3>👨‍💻 Developer</h3>
+    <span class="badge done">done</span>
+    <table>
+      <tr><th>File</th><th>Change</th></tr>
+      <tr><td><code>src/wind.js</code></td><td>WIND_AMPLITUDE: <code>0.3</code> → <code>0.08</code></td></tr>
+      <tr><td><code>src/sketch.js</code></td><td>Multi-ball array, <code>spawnBallOnClick()</code>, <code>mousePressed()</code> added</td></tr>
+    </table>
+    <p class="meta">56/56 tests passed on first attempt. Zero rework loops.</p>
+  </div>
+
+  <!-- RUNTIME -->
+  <div class="phase">
+    <h3>⚙️ Runtime Check</h3>
+    <span class="badge ok">ok</span>
+    <table>
+      <tr><th>Component</th><th>Status</th><th>Notes</th></tr>
+      <tr><td><code>src/ball.js</code></td><td>✅ OK</td><td>Syntax valid; full module exports confirmed</td></tr>
+      <tr><td><code>src/wind.js</code></td><td>✅ OK</td><td>WIND_AMPLITUDE=0.08 confirmed; all exports present</td></tr>
+      <tr><td><code>src/sketch.js</code></td><td>✅ OK</td><td>Syntax valid; spawnBallOnClick wired into mousePressed</td></tr>
+      <tr><td><code>index.html</code></td><td>✅ OK</td><td>Script load order correct</td></tr>
+      <tr><td>Jest test suite</td><td>✅ OK</td><td>56/56 tests passed</td></tr>
+    </table>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="phase">
+    <h3>👁️ Code Review</h3>
+    <span class="badge approved">approved</span>
+    <p>All spec requirements met. Architecture clean — <code>spawnBallOnClick</code> is pure and exported. One non-blocking warning: stale JSDoc comment in <code>src/wind.js</code> line 37 still referenced old amplitude value (0.3/30px instead of 0.08/8px).</p>
+    <table>
+      <tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th></tr>
+      <tr><td><code>src/wind.js</code></td><td>37</td><td class="severity-warning">warning</td><td>JSDoc references old amplitude 0.3 / 30-px arrow; should be 0.08 / ~8-px arrow</td></tr>
+    </table>
+  </div>
+
+  <!-- DEMO -->
+  <div class="phase">
+    <h3>🎬 Demo</h3>
+    <span class="badge ok">ok</span>
+    <table>
+      <tr><th>Scenario</th><th>Result</th><th>Screenshot</th><th>Notes</th></tr>
+      <tr>
+        <td>Wind duwt de bal horizontaal</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-0.png" alt="scenario-0"></td>
+        <td>Wind indicator ► at t=2s; ball drifted rightward</td>
+      </tr>
+      <tr>
+        <td>Wind wisselt van richting</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-1.png" alt="scenario-1"></td>
+        <td>Wind indicator flipped ► → ◄ at t=5s; ball moved left</td>
+      </tr>
+      <tr>
+        <td>Wind is subtiel t.o.v. zwaartekracht</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-2.png" alt="scenario-2"></td>
+        <td>Primarily vertical motion; max wind 0.08 &lt;&lt; gravity 0.5</td>
+      </tr>
+      <tr>
+        <td>Bal spawnt op klikpositie</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-3.png" alt="scenario-3"></td>
+        <td>2nd ball appeared near canvas centre after click at (400,300)</td>
+      </tr>
+      <tr>
+        <td>Nieuwe bal gedraagt zich als andere ballen</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-4.png" alt="scenario-4"></td>
+        <td>Spawned ball fell and drifted like original; gravity + wind confirmed</td>
+      </tr>
+      <tr>
+        <td>Klik buiten canvas spawnt geen bal</td>
+        <td>✅</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-6.png" alt="scenario-6"></td>
+        <td>Ball count stayed at 5; out-of-bounds guard works</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- RETROSPECTIVE -->
+  <div class="phase">
+    <h3>🪞 Retrospective</h3>
+    <span class="badge green">green</span>
+    <table>
+      <tr><th>Phase</th><th>Iterations</th><th>Target</th></tr>
+      <tr><td>Developer ↔ TDD</td><td>0</td><td>≤ 1</td></tr>
+      <tr><td>Developer ↔ Runtime</td><td>0</td><td>≤ 1</td></tr>
+      <tr><td>Developer ↔ Review</td><td>0</td><td>≤ 1</td></tr>
+      <tr><td>Developer ↔ Demo</td><td>0</td><td>≤ 1</td></tr>
+    </table>
+    <table style="margin-top:12px">
+      <tr><th>Phase</th><th>Severity</th><th>What</th><th>Improvement</th></tr>
+      <tr>
+        <td>review</td>
+        <td class="severity-warning">low</td>
+        <td>Stale JSDoc comment in wind.js (old amplitude value)</td>
+        <td>Add lint rule / Jest assertion to catch stale numeric references in comments</td>
+      </tr>
+      <tr>
+        <td>runtime</td>
+        <td class="severity-warning">low</td>
+        <td>sketch.js line coverage only 20% (browser-only draw loop)</td>
+        <td>Document coverage ceiling explicitly; extract more logic into pure functions</td>
+      </tr>
+      <tr>
+        <td>status-tracking</td>
+        <td class="severity-warning">low</td>
+        <td>Loop counters not initialised for all phases in status.json</td>
+        <td>Initialise all loop counters to 0 at pipeline start</td>
+      </tr>
+    </table>
+    <p><strong>Top recommendation:</strong> Add an automated check (custom Jest assertion or ESLint rule) that catches stale numeric references in JSDoc/comments when a constant is changed.</p>
+    <p class="meta"><a href="retrospective.md" style="color:#58a6ff">Full retrospective →</a></p>
+  </div>
+
+  <!-- GIT -->
+  <div class="phase">
+    <h3>🚀 Git</h3>
+    <span class="badge done">done</span>
+    <p>Commit <code>597c5dc</code> pushed to <code>main</code> — <em>feat(wind): reduce wind amplitude and add click-to-spawn balls</em> (10 files changed)</p>
+  </div>
+
+</details>
+</body>
+</html>

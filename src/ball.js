@@ -38,6 +38,55 @@ class Ball {
   }
 
   /**
+   * Resolve a collision between this ball and another.
+   *
+   * Algorithm (elastic collision, equal mass, normal-projection method):
+   *   1. Compute normal vector n from this ball toward the other.
+   *   2. If distance ≥ 2 × BALL_RADIUS — no overlap, nothing to do.
+   *   3. Correct positions: push each ball outward by half the overlap.
+   *   4. Compute relative velocity along the normal (dvn).
+   *   5. If dvn ≤ 0 the balls are already separating — skip velocity swap.
+   *   6. Exchange the normal velocity component between both balls.
+   *
+   * @param {Ball} other  The other ball to test against.
+   */
+  resolveCollision(other) {
+    const dx = other.position.x - this.position.x;
+    const dy = other.position.y - this.position.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // No overlap — nothing to do
+    if (distance >= 2 * BALL_RADIUS) return;
+
+    // Unit normal vector pointing from this ball toward the other
+    const nx = dx / distance;
+    const ny = dy / distance;
+
+    // --- Overlap correction ---
+    const overlap = 2 * BALL_RADIUS - distance;
+    const halfOverlap = overlap / 2;
+    this.position.x  -= halfOverlap * nx;
+    this.position.y  -= halfOverlap * ny;
+    other.position.x += halfOverlap * nx;
+    other.position.y += halfOverlap * ny;
+
+    // --- Velocity correction (only when approaching) ---
+    // dvn = projection of relative velocity onto the normal
+    const dvn =
+      (this.velocity.x - other.velocity.x) * nx +
+      (this.velocity.y - other.velocity.y) * ny;
+
+    // dvn ≤ 0 → balls are already separating; skip swap
+    if (dvn <= 0) return;
+
+    // Exchange the normal component (elastic, equal mass)
+    this.velocity.x  -= dvn * nx;
+    this.velocity.y  -= dvn * ny;
+    other.velocity.x += dvn * nx;
+    other.velocity.y += dvn * ny;
+  }
+
+  /**
    * Check all four canvas edges.
    * On collision: flip the relevant velocity component and apply damping,
    * then correct the position so the ball stays inside the canvas.

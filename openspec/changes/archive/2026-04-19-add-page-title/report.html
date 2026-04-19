@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum Audit Log — add-page-title</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; }
+  h1 { color: #58a6ff; }
+  details { border: 1px solid #30363d; border-radius: 6px; margin: 16px 0; }
+  summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 1.05em; background: #161b22; border-radius: 6px; list-style: none; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary { border-radius: 6px 6px 0 0; }
+  .phase { padding: 12px 16px; border-top: 1px solid #30363d; }
+  .phase h3 { margin: 0 0 8px; font-size: 0.95em; color: #8b949e; text-transform: uppercase; letter-spacing: .05em; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .badge.approved, .badge.done, .badge.ok { background: #1a4731; color: #3fb950; }
+  .badge.failed { background: #4d1a1a; color: #f85149; }
+  .badge.needs-work { background: #3d2a00; color: #d29922; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88em; margin-top: 8px; }
+  th { text-align: left; padding: 6px 8px; background: #161b22; color: #8b949e; border-bottom: 1px solid #30363d; }
+  td { padding: 6px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .severity-error { color: #f85149; font-weight: 600; }
+  .severity-warning { color: #d29922; }
+  .img-thumb { max-width: 160px; border: 1px solid #30363d; border-radius: 4px; }
+  code { background: #161b22; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  .meta { color: #8b949e; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<h1>🦆 Wiggum Audit Log — add-page-title</h1>
+
+<details open>
+  <summary>
+    <span>Run: 2026-04-19 — feat(ui): add red page title above canvas</span>
+    <span class="badge ok">done</span>
+  </summary>
+
+  <!-- REFINEMENT -->
+  <div class="phase">
+    <h3>🔍 Refinement</h3>
+    <span class="badge approved">approved</span>
+    <p class="meta">Stack: p5.js · Affected: <code>index.html</code></p>
+    <p>Simple, well-scoped change. Acceptance criteria are specific and testable: <code>&lt;h1&gt;</code> with exact text "Stuiteren!" in red, positioned above the p5.js canvas. Single-file impact. No error scenarios needed. Definition of done is clear via tasks 2.1 and 2.2.</p>
+  </div>
+
+  <!-- TDD -->
+  <div class="phase">
+    <h3>🧪 TDD — Failing Tests Written</h3>
+    <span class="badge ok">ok</span>
+    <p class="meta">Test file: <code>__tests__/page-title.test.js</code> · Command: <code>npm test</code></p>
+    <table>
+      <tr><th>#</th><th>Test</th><th>Why it fails initially</th></tr>
+      <tr><td>1</td><td><code>index.html</code> contains an <code>&lt;h1&gt;</code> element</td><td>No <code>&lt;h1&gt;</code> in HTML</td></tr>
+      <tr><td>2</td><td><code>&lt;h1&gt;</code> has exact text "Stuiteren!"</td><td>No <code>&lt;h1&gt;</code> in HTML</td></tr>
+      <tr><td>3</td><td><code>&lt;h1&gt;</code> is styled with <code>color: red</code></td><td>No such style rule</td></tr>
+      <tr><td>4</td><td><code>&lt;h1&gt;</code> appears before the p5.js <code>&lt;script&gt;</code> tag</td><td>No <code>&lt;h1&gt;</code> at all</td></tr>
+      <tr><td>5</td><td><code>&lt;h1&gt;</code> is first element inside <code>&lt;body&gt;</code></td><td>First child was a <code>&lt;script&gt;</code> tag</td></tr>
+    </table>
+    <p class="meta">Initial result: 5 failed, 35 passed</p>
+  </div>
+
+  <!-- DEVELOPER -->
+  <div class="phase">
+    <h3>👨‍💻 Developer</h3>
+    <span class="badge done">done</span>
+    <p class="meta">Dev-TDD loops: 1 · Dev-Demo loops: 1</p>
+    <p><strong>Changes to <code>index.html</code>:</strong></p>
+    <ul>
+      <li>Added <code>h1 { color: red; }</code> to the existing <code>&lt;style&gt;</code> block in <code>&lt;head&gt;</code></li>
+      <li>Added <code>&lt;h1&gt;Stuiteren!&lt;/h1&gt;</code> as first child of <code>&lt;body&gt;</code></li>
+      <li>Renamed <code>&lt;title&gt;</code> from <code>pi-demo-p5js</code> → <code>Stuiteren Demo</code> (removes false-positive in ordering test)</li>
+      <li>Fixed <code>body</code> CSS: changed from <code>flex-direction:row</code> + <code>height:100vh</code> (canvas overlapping h1) → <code>flex-direction:column</code> + <code>padding-top:1rem</code> (h1 above canvas)</li>
+    </ul>
+    <p>Final test result: <strong>40/40 passed</strong> ✅</p>
+  </div>
+
+  <!-- RUNTIME -->
+  <div class="phase">
+    <h3>🚀 Runtime Check</h3>
+    <span class="badge ok">ok</span>
+    <table>
+      <tr><th>Component</th><th>Status</th><th>Notes</th></tr>
+      <tr><td><code>index.html</code></td><td>✅ OK</td><td>All local script tags resolve; CDN reference valid; <code>&lt;h1&gt;</code> present with red styling</td></tr>
+      <tr><td><code>src/sketch.js</code></td><td>✅ OK</td><td>No syntax errors; wires Ball + wind modules correctly</td></tr>
+      <tr><td><code>src/ball.js</code></td><td>✅ OK</td><td>100% statement/line coverage</td></tr>
+      <tr><td><code>src/wind.js</code></td><td>✅ OK</td><td>100% statement/line coverage</td></tr>
+      <tr><td>Jest (40 tests)</td><td>✅ OK</td><td>4 suites · 40 tests · 0.5 s</td></tr>
+    </table>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="phase">
+    <h3>🔎 Code Review</h3>
+    <span class="badge approved">approved</span>
+    <p>Clean, minimal implementation. All spec requirements met. The <code>&lt;h1&gt;</code> is correctly the first child of <code>&lt;body&gt;</code>, before all <code>&lt;script&gt;</code> tags. CSS is properly scoped in <code>&lt;head&gt;</code>. Title rename is harmless. No scope creep. All 40 tests pass.</p>
+  </div>
+
+  <!-- DEMO -->
+  <div class="phase">
+    <h3>🎬 Demo</h3>
+    <span class="badge ok">ok</span>
+    <p class="meta">Loop 1: initial run needed canvas layout fix (flex-direction column). Loop 2: all scenarios passed.</p>
+    <table>
+      <tr><th>Scenario</th><th>Result</th><th>Screenshot</th><th>Notes</th></tr>
+      <tr>
+        <td>Titel zichtbaar bij laden</td>
+        <td>✅ passed</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-0.png" alt="Scenario 0 screenshot"></td>
+        <td>Bold red "Stuiteren!" at top of page, centred, <code>rgb(255,0,0)</code> confirmed via DOM</td>
+      </tr>
+      <tr>
+        <td>Titel staat boven het canvas</td>
+        <td>✅ passed</td>
+        <td><img class="img-thumb" src="../../wiggum/demo-screenshots/scenario-1.png" alt="Scenario 1 screenshot"></td>
+        <td>DOM bounding boxes confirm: <code>h1.bottom=74px</code> &lt; <code>canvas.top=96px</code></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- GIT -->
+  <div class="phase">
+    <h3>📦 Git</h3>
+    <span class="badge done">done</span>
+    <p class="meta">Commit: <code>dbee301</code> · Branch: <code>main</code> · Message: <em>feat(ui): add red page title above canvas</em></p>
+    <table>
+      <tr><th>File</th><th>Change</th></tr>
+      <tr><td><code>index.html</code></td><td>Modified — <code>&lt;h1&gt;</code> + CSS layout fix</td></tr>
+      <tr><td><code>__tests__/page-title.test.js</code></td><td>New — 5 tests (40 total passing)</td></tr>
+      <tr><td><code>openspec/changes/add-page-title/*</code></td><td>New — proposal, design, specs, tasks</td></tr>
+      <tr><td><code>package.json</code> / <code>package-lock.json</code></td><td>Modified — test dependencies</td></tr>
+      <tr><td><code>wiggum/completed-tasks.md</code></td><td>Modified — task recorded</td></tr>
+    </table>
+  </div>
+
+</details>
+
+</body>
+</html>

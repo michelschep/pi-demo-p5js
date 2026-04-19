@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wiggum Audit Log</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; }
+  h1 { color: #58a6ff; }
+  details { border: 1px solid #30363d; border-radius: 6px; margin: 16px 0; }
+  summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 1.05em; background: #161b22; border-radius: 6px; list-style: none; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary { border-radius: 6px 6px 0 0; }
+  .phase { padding: 12px 16px; border-top: 1px solid #30363d; }
+  .phase h3 { margin: 0 0 8px; font-size: 0.95em; color: #8b949e; text-transform: uppercase; letter-spacing: .05em; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .badge.approved, .badge.done, .badge.ok { background: #1a4731; color: #3fb950; }
+  .badge.failed { background: #4d1a1a; color: #f85149; }
+  .badge.needs-work { background: #3d2a00; color: #d29922; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88em; margin-top: 8px; }
+  th { text-align: left; padding: 6px 8px; background: #161b22; color: #8b949e; border-bottom: 1px solid #30363d; }
+  td { padding: 6px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .severity-error { color: #f85149; font-weight: 600; }
+  .severity-warning { color: #d29922; }
+  .severity-info { color: #58a6ff; }
+  code { background: #161b22; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  .meta { color: #8b949e; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<h1>🦆 Wiggum Audit Log</h1>
+
+<details open>
+  <summary>
+    <span>📦 use-p5js-cdn</span>
+    <span class="meta">2026-04-19T09:35:00.000Z · git 3f9368d</span>
+  </summary>
+
+  <!-- REFINEMENT -->
+  <div class="phase">
+    <h3>🔍 Refinement</h3>
+    <span class="badge approved">approved</span>
+    <p>Minimal, well-scoped 2-file change. Acceptance criteria are specific and inspectable: exact CDN URL pinned to version 1.11.3, negative assertion that node_modules path is absent, and package.json key removal. All four spec scenarios are unambiguously testable (file inspection + npm install check). Error scenario (CDN unavailability) is acknowledged and accepted in design.md for a demo project. Jest tests confirmed to mock p5 independently — no test changes required. "Done" is clearly defined by tasks 1.1, 2.1, 2.2, 3.1, 3.2.</p>
+  </div>
+
+  <!-- TDD -->
+  <div class="phase">
+    <h3>🧪 TDD</h3>
+    <span class="badge done">done</span> &nbsp; <strong>4</strong> failing tests written<br>
+    <span class="meta">__tests__/cdn-config.test.js</span>
+    <p>Tests verify index.html uses CDN URL and package.json has no p5 dependency. All 4 meaningful tests correctly fail before implementation.</p>
+    <table>
+      <tr><th>Test</th><th>Pre-impl Status</th></tr>
+      <tr><td>contains the pinned CDN URL for p5@1.11.3</td><td>❌ failing</td></tr>
+      <tr><td>does NOT reference node_modules/p5 as the script source</td><td>❌ failing</td></tr>
+      <tr><td>CDN &lt;script&gt; tag is well-formed</td><td>❌ failing</td></tr>
+      <tr><td>dependencies object does NOT contain a "p5" key</td><td>❌ failing</td></tr>
+      <tr><td>devDependencies object does NOT contain a "p5" key</td><td>✅ passing (guard test)</td></tr>
+    </table>
+  </div>
+
+  <!-- DEVELOPER -->
+  <div class="phase">
+    <h3>💻 Developer</h3>
+    <span class="badge done">done</span> &nbsp; <strong>1 iteration</strong>
+    <p><strong>Test result:</strong> 35 passed, 0 failed (3 test suites)</p>
+    <p><strong>Files changed:</strong></p>
+    <ul>
+      <li><code>index.html</code> — replaced node_modules script src with CDN URL <code>https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js</code></li>
+      <li><code>package.json</code> — removed <code>"p5": "^1.11.3"</code> from dependencies</li>
+      <li><code>package-lock.json</code> — synced after <code>npm install</code> (65 packages removed)</li>
+    </ul>
+    <p class="meta">Replaced node_modules/p5 script src with pinned CDN URL. Removed 'p5' key from dependencies. Ran npm install to sync package-lock.json.</p>
+  </div>
+
+  <!-- RUNTIME -->
+  <div class="phase">
+    <h3>🚀 Runtime</h3>
+    <span class="badge ok">ok</span>
+    <p>use-p5js-cdn change verified clean. CDN URL is correctly pinned to p5@1.11.3 via jsDelivr. Local p5 package fully removed. All source files syntactically valid. Full test suite (bouncing-ball, wind-force, cdn-config) passes with 100% line coverage.</p>
+    <table>
+      <tr><th>Component</th><th>Status</th><th>Detail</th></tr>
+      <tr><td>index.html — CDN script tag</td><td>✅ ok</td><td>Exactly 1 script tag references CDN URL. Zero references to node_modules.</td></tr>
+      <tr><td>package.json — no p5 dependency</td><td>✅ ok</td><td><code>"dependencies": {}</code> is empty. "p5" key absent from both dependencies and devDependencies.</td></tr>
+      <tr><td>node_modules/p5 — absent</td><td>✅ ok</td><td>Directory does not exist, confirming the package was not installed locally.</td></tr>
+      <tr><td>src/ball.js — syntax check</td><td>✅ ok</td><td>node --check passed with no errors.</td></tr>
+      <tr><td>src/wind.js — syntax check</td><td>✅ ok</td><td>node --check passed with no errors.</td></tr>
+      <tr><td>src/sketch.js — syntax check</td><td>✅ ok</td><td>node --check passed with no errors.</td></tr>
+      <tr><td>npm test</td><td>✅ ok</td><td>3 test suites, 35 tests — all passed. 100% coverage. Time: 0.556 s.</td></tr>
+    </table>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="phase">
+    <h3>👀 Code Review</h3>
+    <span class="badge approved">approved</span>
+    <p>Clean, minimal implementation. All spec requirements met. CDN URL is exact-version-pinned to p5@1.11.3 on jsDelivr. p5 removed from both dependencies and devDependencies. node_modules/p5 is absent after npm install. No src/ files touched. All 35 tests pass. No layer violations, no magic strings, no regressions.</p>
+    <table>
+      <tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggestion</th></tr>
+      <tr>
+        <td><code>index.html</code></td>
+        <td>12</td>
+        <td class="severity-info">info</td>
+        <td>No Subresource Integrity (SRI) hash on the CDN &lt;script&gt; tag. Without it, a compromised CDN could serve malicious JavaScript.</td>
+        <td>Consider adding <code>integrity</code> + <code>crossorigin</code> attributes. jsDelivr exposes hashes at their CDN endpoint. Future hardening step, not a blocker.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- GIT -->
+  <div class="phase">
+    <h3>🔀 Git</h3>
+    <span class="badge done">done</span>
+    <p><code>3f9368d</code> — feat: load p5.js from CDN instead of node_modules</p>
+    <p class="meta">9 files committed · pushed to origin/main</p>
+  </div>
+
+</details>
+
+</body>
+</html>
