@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+wiggum/results/
+wiggum/status.json
+wiggum/update.mjs
+wiggum/errors.log
+.DS_Store

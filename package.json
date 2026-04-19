@@ -1,0 +1,25 @@
+{
+  "name": "pi-demo-p5js",
+  "version": "1.0.0",
+  "description": "pi-demo-p5js — p5.js demo project with Wiggum agent pipeline",
+  "main": "src/sketch.js",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "keywords": ["p5js", "creative-coding"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "p5": "^1.11.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"]
+  }
+}
