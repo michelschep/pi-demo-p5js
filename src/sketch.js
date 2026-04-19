@@ -47,8 +47,9 @@ function draw() {
     ball.update();
     ball.checkBounds();
 
-    // --- Draw ball (task 2.1: use ball's own unique color instead of hardcoded fill) ---
-    noStroke();
+    // --- Draw ball ---
+    stroke(ball.strokeColor.r, ball.strokeColor.g, ball.strokeColor.b);
+    strokeWeight(STROKE_WEIGHT);
     fill(ball.color.r, ball.color.g, ball.color.b);
     ellipse(ball.position.x, ball.position.y, BALL_RADIUS * 2, BALL_RADIUS * 2);
   }

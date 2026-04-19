@@ -11,6 +11,7 @@
 const GRAVITY = { x: 0, y: 0.5 };
 const DAMPING = 0.8;
 const BALL_RADIUS = 20;
+const STROKE_WEIGHT = 3;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
 
@@ -56,8 +57,10 @@ class Ball {
     this.position = { x: position.x, y: position.y };
     this.velocity = { x: velocity.x, y: velocity.y };
 
-    // Task 1.2 — assign a unique random color at construction time
-    this.color = hsbToRgb(Math.random() * 360, 0.8, 0.9);
+    // Task 1.2 — assign a unique random color and complementary stroke color at construction time
+    const hue = Math.random() * 360;
+    this.color = hsbToRgb(hue, 0.8, 0.9);
+    this.strokeColor = hsbToRgb((hue + 180) % 360, 0.8, 0.9);
   }
 
   /** Add gravity to vertical velocity (one frame). */
@@ -156,5 +159,5 @@ class Ball {
 
 // Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
-  module.exports = { Ball, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, CANVAS_WIDTH, CANVAS_HEIGHT };
+  module.exports = { Ball, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT };
 }
