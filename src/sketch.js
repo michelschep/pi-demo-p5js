@@ -52,6 +52,21 @@ function draw() {
     strokeWeight(STROKE_WEIGHT);
     fill(ball.color.r, ball.color.g, ball.color.b);
     ellipse(ball.position.x, ball.position.y, BALL_RADIUS * 2, BALL_RADIUS * 2);
+
+    // --- Task 2.1: Luma-based text colour ---
+    // luma = 0.299·R + 0.587·G + 0.114·B  (ITU-R BT.601 standard)
+    const luma = 0.299 * ball.color.r + 0.587 * ball.color.g + 0.114 * ball.color.b;
+    if (luma >= 128) {
+      fill(0);     // dark text on bright ball
+    } else {
+      fill(255);   // light text on dark ball
+    }
+
+    // --- Task 2.2: Fibonacci label centred inside the ball ---
+    noStroke();
+    textSize(11);
+    textAlign(CENTER, CENTER);
+    text(ball.fibonacciNumber, ball.position.x, ball.position.y);
   }
 
   // --- Resolve ball–ball collisions (unique pairs only) ---

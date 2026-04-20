@@ -8,6 +8,9 @@
  *   canvas   = 600 × 400
  */
 
+const FIBONACCI = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+let _fibIndex = 0;
+
 const GRAVITY = { x: 0, y: 0.5 };
 const DAMPING = 0.8;
 const BALL_RADIUS = 20;
@@ -57,7 +60,11 @@ class Ball {
     this.position = { x: position.x, y: position.y };
     this.velocity = { x: velocity.x, y: velocity.y };
 
-    // Task 1.2 — assign a unique random color and complementary stroke color at construction time
+    // Task 1.2 — assign Fibonacci number from cyclical module-level index
+    this.fibonacciNumber = FIBONACCI[_fibIndex % FIBONACCI.length];
+    _fibIndex += 1;
+
+    // Assign a unique random color and complementary stroke color at construction time
     const hue = Math.random() * 360;
     this.color = hsbToRgb(hue, 0.8, 0.9);
     this.strokeColor = hsbToRgb((hue + 180) % 360, 0.8, 0.9);
@@ -157,7 +164,15 @@ class Ball {
   }
 }
 
+/**
+ * Reset the module-level Fibonacci index to 0.
+ * Intended for use in test environments (Jest beforeEach) only.
+ */
+function resetFibIndex() {
+  _fibIndex = 0;
+}
+
 // Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
-  module.exports = { Ball, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT };
+  module.exports = { Ball, resetFibIndex, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT };
 }
