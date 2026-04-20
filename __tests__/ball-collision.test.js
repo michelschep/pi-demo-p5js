@@ -233,3 +233,35 @@ describe('Ball.resolveCollision – overlap correction', () => {
     expect(ballB.position.x).toBeCloseTo(posBxBefore);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Per-instance radius – collision threshold r1 + r2 (spec update ball-lifecycle)
+// ---------------------------------------------------------------------------
+describe('Ball.resolveCollision – per-instance radius threshold', () => {
+  test('collision triggers when distance ≤ r1+r2 for non-default radii', () => {
+    // r1=10, r2=8 → threshold 18; place balls at distance 15 → should collide
+    const ballA = new Ball({ x: 200, y: 200 }, { x: 4, y: 0 });
+    const ballB = new Ball({ x: 215, y: 200 }, { x: -4, y: 0 });
+    ballA.radius = 10;
+    ballB.radius = 8;
+
+    const vAxBefore = ballA.velocity.x;
+    ballA.resolveCollision(ballB);
+
+    expect(Math.abs(ballA.velocity.x - vAxBefore)).toBeGreaterThan(1e-9);
+  });
+
+  test('no collision when distance > r1+r2 even if < 2*BALL_RADIUS', () => {
+    // r1=10, r2=8 → threshold 18; place at distance 20 → no collision desired
+    // Current code uses 2*BALL_RADIUS=24 so collision IS triggered → test fails
+    const ballA = new Ball({ x: 200, y: 200 }, { x: 3, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -3, y: 0 });
+    ballA.radius = 10;
+    ballB.radius = 8;
+
+    const vAxBefore = ballA.velocity.x;
+    ballA.resolveCollision(ballB);
+
+    expect(ballA.velocity.x).toBeCloseTo(vAxBefore);
+  });
+});

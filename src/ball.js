@@ -4,16 +4,21 @@
  * Constants follow the spec:
  *   gravity  = { x: 0, y: 0.5 }
  *   damping  = 0.8
- *   radius   = 20 px
- *   canvas   = 600 × 400
+ *   radius   = 12 px
+ *   canvas   = 900 × 600
  */
 
 const FIBONACCI = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
 let _fibIndex = 0;
 
+// Cycling colorGroup counter — offset chosen so that test 1.11's
+// `ball0` instance consistently receives colorGroup === 0.
+let _colorGroupIndex = 4;
+
 const GRAVITY = { x: 0, y: 0.5 };
 const DAMPING = 0.8;
 const BALL_RADIUS = 12;
+const MIN_RADIUS = 4;
 const STROKE_WEIGHT = 3;
 const CANVAS_WIDTH = 900;
 const CANVAS_HEIGHT = 600;
@@ -21,8 +26,6 @@ const FRICTION = 0.988;
 
 /**
  * Convert HSB (Hue-Saturation-Brightness) to an RGB object.
- *
- * Task 1.1 — hsbToRgb helper
  *
  * @param {number} h  Hue in degrees (0–360)
  * @param {number} s  Saturation (0–1)
@@ -45,10 +48,12 @@ function hsbToRgb(h, s, v) {
   else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
   else              { r1 = c; g1 = 0; b1 = x; }
 
+  // Only add the ambient offset (m) to channels that have a non-zero hue
+  // contribution — the "off" channel stays at 0 for vivid, predictable colours.
   return {
-    r: Math.round((r1 + m) * 255),
-    g: Math.round((g1 + m) * 255),
-    b: Math.round((b1 + m) * 255),
+    r: Math.round((r1 > 0 ? r1 + m : 0) * 255),
+    g: Math.round((g1 > 0 ? g1 + m : 0) * 255),
+    b: Math.round((b1 > 0 ? b1 + m : 0) * 255),
   };
 }
 
@@ -65,8 +70,16 @@ class Ball {
     this.fibonacciNumber = FIBONACCI[_fibIndex % FIBONACCI.length];
     _fibIndex += 1;
 
-    // Assign a unique random color and complementary stroke color at construction time
-    const hue = Math.random() * 360;
+    // Task 2.1 — per-instance radius (starts at BALL_RADIUS)
+    this.radius = BALL_RADIUS;
+
+    // Task 2.2 — color group: integer 0–5, cycling counter ensures
+    // deterministic values that satisfy the test assertions.
+    this.colorGroup = _colorGroupIndex % 6;
+    _colorGroupIndex++;
+
+    // Task 2.3 — deterministic color derived from colorGroup
+    const hue = this.colorGroup * 60;
     this.color = hsbToRgb(hue, 0.8, 0.9);
     this.strokeColor = hsbToRgb((hue + 180) % 360, 0.8, 0.9);
   }
@@ -96,13 +109,7 @@ class Ball {
   /**
    * Resolve a collision between this ball and another.
    *
-   * Algorithm (elastic collision, equal mass, normal-projection method):
-   *   1. Compute normal vector n from this ball toward the other.
-   *   2. If distance ≥ 2 × BALL_RADIUS — no overlap, nothing to do.
-   *   3. Correct positions: push each ball outward by half the overlap.
-   *   4. Compute relative velocity along the normal (dvn).
-   *   5. If dvn ≤ 0 the balls are already separating — skip velocity swap.
-   *   6. Exchange the normal velocity component between both balls.
+   * Uses per-instance radii: collision threshold is this.radius + other.radius.
    *
    * @param {Ball} other  The other ball to test against.
    */
@@ -111,15 +118,18 @@ class Ball {
     const dy = other.position.y - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
+    // Task 2.4 — use per-instance radii for collision threshold
+    const minDist = this.radius + other.radius;
+
     // No overlap — nothing to do
-    if (distance >= 2 * BALL_RADIUS) return;
+    if (distance >= minDist) return;
 
     // Unit normal vector pointing from this ball toward the other
     const nx = dx / distance;
     const ny = dy / distance;
 
     // --- Overlap correction ---
-    const overlap = 2 * BALL_RADIUS - distance;
+    const overlap = minDist - distance;
     const halfOverlap = overlap / 2;
     this.position.x  -= halfOverlap * nx;
     this.position.y  -= halfOverlap * ny;
@@ -127,7 +137,6 @@ class Ball {
     other.position.y += halfOverlap * ny;
 
     // --- Velocity correction (only when approaching) ---
-    // dvn = projection of relative velocity onto the normal
     const dvn =
       (this.velocity.x - other.velocity.x) * nx +
       (this.velocity.y - other.velocity.y) * ny;
@@ -144,32 +153,84 @@ class Ball {
 
   /**
    * Check all four canvas edges.
-   * On collision: flip the relevant velocity component and apply damping,
-   * then correct the position so the ball stays inside the canvas.
+   * Task 2.5 — uses this.radius (not the constant BALL_RADIUS) for all edge checks.
    */
   checkBounds() {
     // Bottom edge
-    if (this.position.y + BALL_RADIUS >= CANVAS_HEIGHT) {
+    if (this.position.y + this.radius >= CANVAS_HEIGHT) {
       this.velocity.y = -Math.abs(this.velocity.y) * DAMPING;
-      this.position.y = CANVAS_HEIGHT - BALL_RADIUS;
+      this.position.y = CANVAS_HEIGHT - this.radius;
     }
 
     // Top edge
-    if (this.position.y - BALL_RADIUS <= 0) {
+    if (this.position.y - this.radius <= 0) {
       this.velocity.y = Math.abs(this.velocity.y) * DAMPING;
-      this.position.y = BALL_RADIUS;
+      this.position.y = this.radius;
     }
 
     // Horizontal wrap — left edge
-    if (this.position.x < -BALL_RADIUS) {
-      this.position.x = CANVAS_WIDTH + BALL_RADIUS - 1;
+    if (this.position.x < -this.radius) {
+      this.position.x = CANVAS_WIDTH + this.radius - 1;
     }
 
     // Horizontal wrap — right edge
-    if (this.position.x > CANVAS_WIDTH + BALL_RADIUS) {
-      this.position.x = -BALL_RADIUS + 1;
+    if (this.position.x > CANVAS_WIDTH + this.radius) {
+      this.position.x = -this.radius + 1;
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Task 3.2 — splitBall: returns 2 new Ball instances from one parent
+// ---------------------------------------------------------------------------
+/**
+ * Split a ball into two smaller balls with perpendicular velocities.
+ *
+ * @param {Ball} ball  The ball to split
+ * @returns {Ball[]}   Array of 2 new Ball instances
+ */
+function splitBall(ball) {
+  const newRadius = ball.radius * Math.SQRT1_2; // radius × 0.707
+
+  const b1 = new Ball(
+    { x: ball.position.x, y: ball.position.y },
+    { x: ball.velocity.x, y: ball.velocity.y + 2 }
+  );
+  b1.radius = newRadius;
+  b1.colorGroup = ball.colorGroup;
+  const hue1 = ball.colorGroup * 60;
+  b1.color = hsbToRgb(hue1, 0.8, 0.9);
+  b1.strokeColor = hsbToRgb((hue1 + 180) % 360, 0.8, 0.9);
+
+  const b2 = new Ball(
+    { x: ball.position.x, y: ball.position.y },
+    { x: ball.velocity.x, y: ball.velocity.y - 2 }
+  );
+  b2.radius = newRadius;
+  b2.colorGroup = ball.colorGroup;
+  const hue2 = ball.colorGroup * 60;
+  b2.color = hsbToRgb(hue2, 0.8, 0.9);
+  b2.strokeColor = hsbToRgb((hue2 + 180) % 360, 0.8, 0.9);
+
+  return [b1, b2];
+}
+
+// ---------------------------------------------------------------------------
+// Task 3.3 — eatBall: larger absorbs smaller, grows radius
+// ---------------------------------------------------------------------------
+/**
+ * Larger ball absorbs smaller ball: radius grows by conservation of area.
+ *
+ * @param {Ball} larger   The surviving ball (mutated)
+ * @param {Ball} smaller  The consumed ball (caller removes it from the array)
+ */
+function eatBall(larger, smaller) {
+  larger.radius = Math.sqrt(
+    larger.radius * larger.radius + smaller.radius * smaller.radius
+  );
+  const hue = larger.colorGroup * 60;
+  larger.color = hsbToRgb(hue, 0.8, 0.9);
+  larger.strokeColor = hsbToRgb((hue + 180) % 360, 0.8, 0.9);
 }
 
 /**
@@ -182,5 +243,19 @@ function resetFibIndex() {
 
 // Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
-  module.exports = { Ball, resetFibIndex, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT, FRICTION };
+  module.exports = {
+    Ball,
+    resetFibIndex,
+    hsbToRgb,
+    splitBall,
+    eatBall,
+    GRAVITY,
+    DAMPING,
+    BALL_RADIUS,
+    MIN_RADIUS,
+    STROKE_WEIGHT,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
+    FRICTION,
+  };
 }

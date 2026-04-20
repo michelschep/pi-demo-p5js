@@ -213,3 +213,45 @@ describe('Ball – right-edge wrap', () => {
     expect(ball.position.x).toBeCloseTo(-BALL_RADIUS + 1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Per-instance radius (spec update ball-lifecycle)
+// ---------------------------------------------------------------------------
+describe('Ball – per-instance radius property', () => {
+  test('new ball has this.radius set to BALL_RADIUS', () => {
+    const ball = new Ball({ x: 300, y: 200 }, { x: 0, y: 0 });
+    expect(ball.radius).toBeDefined();
+    expect(ball.radius).toBe(BALL_RADIUS);
+  });
+
+  test('checkBounds uses this.radius for bottom-edge detection', () => {
+    // Ball with radius > BALL_RADIUS: bounce must trigger at CANVAS_HEIGHT - this.radius
+    const ball = new Ball({ x: 300, y: 300 }, { x: 0, y: 5 });
+    ball.radius = 20;
+    ball.position.y = CANVAS_HEIGHT - 20; // at edge per this.radius
+    ball.checkBounds();
+    // Current code uses BALL_RADIUS=12: CANVAS_HEIGHT - 20 + 12 < CANVAS_HEIGHT → no bounce
+    expect(ball.velocity.y).toBeCloseTo(-5 * 0.8);
+  });
+
+  test('checkBounds uses this.radius for right-edge wrap', () => {
+    const ball = new Ball({ x: 300, y: 300 }, { x: 5, y: 0 });
+    ball.radius = 20;
+    ball.position.x = CANVAS_WIDTH + 20 + 1; // past right edge per this.radius
+    ball.checkBounds();
+    // Current code wraps to -BALL_RADIUS+1=-11; desired: -this.radius+1=-19
+    expect(ball.position.x).toBeCloseTo(-20 + 1);
+  });
+});
+
+describe('Ball – colorGroup property', () => {
+  test('colorGroup is assigned on construction and is integer 0–5', () => {
+    for (let i = 0; i < 30; i++) {
+      const ball = new Ball({ x: 0, y: 0 }, { x: 0, y: 0 });
+      expect(ball.colorGroup).toBeDefined();
+      expect(Number.isInteger(ball.colorGroup)).toBe(true);
+      expect(ball.colorGroup).toBeGreaterThanOrEqual(0);
+      expect(ball.colorGroup).toBeLessThanOrEqual(5);
+    }
+  });
+});
