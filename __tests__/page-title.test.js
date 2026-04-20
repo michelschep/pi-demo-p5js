@@ -34,10 +34,10 @@ describe('Page title – <h1> element present', () => {
     expect(html).toMatch(/<h1[^>]*>\s*Stuiteren!\s*<\/h1>/i);
   });
 
-  test('<h1> is styled with color red', () => {
-    // The style block must declare color: red for h1
-    // Accepts both `h1 { color: red; }` and variations like `color:red`
-    expect(html).toMatch(/h1\s*\{[^}]*color\s*:\s*red/i);
+  test('<h1> is styled with color green', () => {
+    // The style block must declare color: green for h1
+    // Accepts both `h1 { color: green; }` and variations like `color:green`
+    expect(html).toMatch(/h1\s*\{[^}]*color\s*:\s*green/i);
   });
 });
 

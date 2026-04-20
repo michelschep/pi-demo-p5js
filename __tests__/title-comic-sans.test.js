@@ -7,7 +7,8 @@
  *  - Task 1.1: h1-stijl bevat font-family: "Comic Sans MS", "Comic Sans", cursive
  *  - Task 2.1: de titel "Stuiteren!" wordt in Comic Sans weergegeven
  *              (font-family stack aanwezig in de inline stijl voor h1)
- *  - Task 2.2: de rode kleur blijft behouden naast de nieuwe font-family
+ *  - Task 2.2: de kleur blijft behouden naast de nieuwe font-family
+ *              (updated by green-title change: color is now green)
  */
 
 const fs = require('fs');
@@ -68,15 +69,15 @@ describe('Comic Sans – titel "Stuiteren!" krijgt Comic Sans (task 2.1)', () =>
 });
 
 // ---------------------------------------------------------------------------
-// Task 2.2 – rode kleur blijft behouden
+// Task 2.2 – kleur blijft behouden (green-title change: now green)
 // ---------------------------------------------------------------------------
-describe('Comic Sans – rode kleur h1 blijft behouden (task 2.2)', () => {
-  test('h1 style still declares color: red', () => {
-    // The existing color: red must not be removed when adding font-family
-    expect(html).toMatch(/h1\s*\{[^}]*color\s*:\s*red/i);
+describe('Comic Sans – kleur h1 blijft behouden (task 2.2)', () => {
+  test('h1 style still declares a color property', () => {
+    // A color must be present (currently green after green-title change)
+    expect(html).toMatch(/h1\s*\{[^}]*color\s*:\s*green/i);
   });
 
-  test('h1 style has both color: red AND Comic Sans font-family', () => {
+  test('h1 style has both color: green AND Comic Sans font-family', () => {
     // Both declarations must coexist in the same h1 rule block
     const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
     expect(styleMatch).not.toBeNull();
@@ -87,7 +88,7 @@ describe('Comic Sans – rode kleur h1 blijft behouden (task 2.2)', () => {
     expect(h1RuleMatch).not.toBeNull();
 
     const h1Declarations = h1RuleMatch[1];
-    expect(h1Declarations).toMatch(/color\s*:\s*red/i);
+    expect(h1Declarations).toMatch(/color\s*:\s*green/i);
     expect(h1Declarations).toMatch(/font-family\s*:[^;]*Comic Sans MS/i);
   });
 });
