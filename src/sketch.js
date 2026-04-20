@@ -39,11 +39,16 @@ function setup() {
 function draw() {
   background(15, 17, 23);
 
-  const windForce = calculateWind(frameCount);
+  // Task 5.1: Replace calculateWind(frameCount) with user-controlled getWindState()
+  const windState  = typeof getWindState === 'function'
+    ? getWindState()
+    : { angleDeg: 0, strength: 0.1 };
+  const windVector = getWindVector(windState.angleDeg, windState.strength);
 
   for (const ball of balls) {
     // --- Physics update ---
-    ball.velocity = applyWind(ball.velocity, windForce);
+    // Task 5.2: applyWind with 2D windVector {x, y}
+    ball.velocity = applyWind(ball.velocity, windVector);
     ball.update();
     ball.checkBounds();
 
@@ -76,9 +81,9 @@ function draw() {
     }
   }
 
-  // --- Draw wind arrow with label ---
-  const arrow = getWindArrow(windForce);
-  drawWindArrow(arrow.dx);
+  // --- Draw wind arrow with label (Task 5.3: 2D arrow using dx and dy) ---
+  const arrow = getWindArrow(windVector);
+  drawWindArrow(arrow.dx, arrow.dy);
 }
 
 /** Spawn a new ball at the mouse position when the canvas is clicked. */
@@ -87,29 +92,41 @@ function mousePressed() {
 }
 
 /**
- * Render a labelled horizontal wind arrow near the top-left of the canvas.
- * @param {number} dx  Signed arrow length in pixels (positive = right, negative = left)
+ * Render a labelled 2-D wind arrow near the top-left of the canvas.
+ *
+ * @param {number} dx  Horizontal arrow length in pixels (positive = right)
+ * @param {number} dy  Vertical arrow length in pixels (positive = down)
  */
-function drawWindArrow(dx) {
+function drawWindArrow(dx, dy) {
   const ORIGIN_X = 50;
   const ORIGIN_Y = 30;
-  const TIP_X    = ORIGIN_X + dx;
+  const TIP_X    = ORIGIN_X + (dx || 0);
+  const TIP_Y    = ORIGIN_Y + (dy || 0);
   const HEAD_SIZE = 7;
+
+  const totalLen = Math.sqrt((dx || 0) ** 2 + (dy || 0) ** 2);
 
   // Arrow shaft
   stroke(255, 220, 80);
   strokeWeight(2);
-  line(ORIGIN_X, ORIGIN_Y, TIP_X, ORIGIN_Y);
+  line(ORIGIN_X, ORIGIN_Y, TIP_X, TIP_Y);
 
   // Arrowhead triangle (skip when wind is effectively zero)
-  if (Math.abs(dx) > 1) {
-    const dir = dx > 0 ? 1 : -1;
+  if (totalLen > 1) {
+    const ux = (dx || 0) / totalLen; // unit vector
+    const uy = (dy || 0) / totalLen;
+    // Perpendicular
+    const px = -uy;
+    const py =  ux;
+
     fill(255, 220, 80);
     noStroke();
     triangle(
-      TIP_X,                          ORIGIN_Y,
-      TIP_X - dir * HEAD_SIZE,        ORIGIN_Y - HEAD_SIZE / 2,
-      TIP_X - dir * HEAD_SIZE,        ORIGIN_Y + HEAD_SIZE / 2
+      TIP_X,                                TIP_Y,
+      TIP_X - ux * HEAD_SIZE + px * (HEAD_SIZE / 2),
+      TIP_Y - uy * HEAD_SIZE + py * (HEAD_SIZE / 2),
+      TIP_X - ux * HEAD_SIZE - px * (HEAD_SIZE / 2),
+      TIP_Y - uy * HEAD_SIZE - py * (HEAD_SIZE / 2)
     );
   }
 
