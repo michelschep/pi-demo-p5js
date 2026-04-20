@@ -9,86 +9,12 @@
     canvas { display: block; }
     h1 { color: green; font-family: "Comic Sans MS", "Comic Sans", cursive; }
 
-    /* Wind controls */
-    #wind-ui {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 1rem;
-      padding: 0.8rem 1.2rem;
-      background: #1a1d27;
-      border: 1px solid #2e3248;
-      border-radius: 8px;
-      color: #c8cde8;
-      font-family: sans-serif;
-      font-size: 14px;
-    }
-    #wind-ui label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    #wind-ui input[type="range"] {
-      width: 180px;
-      accent-color: #ffdc50;
-    }
-    .wind-compass {
-      position: relative;
-      width: 120px;
-      height: 120px;
-    }
-    .wind-compass canvas {
-      display: block;
-      border-radius: 50%;
-      cursor: crosshair;
-    }
-    .compass-label {
-      position: absolute;
-      font-size: 11px;
-      font-weight: bold;
-      color: #c8cde8;
-      text-align: center;
-    }
-    .compass-label.north { top: -2px;  left: 50%; transform: translateX(-50%); }
-    .compass-label.south { bottom: -2px; left: 50%; transform: translateX(-50%); }
-    .compass-label.west  { left: -8px; top: 50%; transform: translateY(-50%); }
-    .compass-label.east  { right: -8px; top: 50%; transform: translateY(-50%); }
-    #wind-display {
-      color: #ffdc50;
-      font-size: 13px;
-      font-family: monospace;
-    }
   </style>
 </head>
 <body>
 <h1>Stuiteren!</h1>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
   <script src="src/ball.js"></script>
-  <script src="src/wind.js"></script>
-
-  <!-- Wind-controls UI (tasks 3.1 – 3.4) -->
-  <div id="wind-ui">
-    <label>
-      Windsterkte
-      <input type="range" id="wind-strength" min="0" max="0.3" step="0.01" value="0.1">
-    </label>
-
-    <!-- Compass direction widget (task 3.2) -->
-    <div class="wind-compass">
-      <span class="compass-label north">N</span>
-      <span class="compass-label south">Z</span>
-      <span class="compass-label west">W</span>
-      <span class="compass-label east">O</span>
-      <canvas id="wind-direction" width="120" height="120"></canvas>
-    </div>
-
-    <!-- Numeric readout (task 3.3) -->
-    <span id="wind-display">0° | 0.10</span>
-  </div>
-
-  <script src="src/wind-controls.js"></script>
   <script src="src/sketch.js"></script>
 </body>
 </html>
