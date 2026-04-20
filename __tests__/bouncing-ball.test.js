@@ -5,16 +5,16 @@
  *  - Gravity applied to velocity each frame
  *  - Bouncing off bottom edge (y + radius >= canvasHeight)
  *  - Bouncing off top edge (y - radius <= 0)
- *  - Bouncing off left/right edges (x ± radius <= 0 / >= canvasWidth)
- *  - Damping factor 0.8 applied on bounce
- *  - Ball radius is 20px
- *  - Canvas dimensions 600×400
+ *  - Horizontal wrap at left/right edges (no bounce, teleport to opposite side)
+ *  - Damping factor 0.8 applied on top/bottom bounce
+ *  - Ball radius is 12px
+ *  - Canvas dimensions 900×600
  *
  * Constants (from spec/refinement):
  *   gravity  = { x: 0, y: 0.5 }
  *   damping  = 0.8
- *   radius   = 20
- *   canvas   = 600 × 400
+ *   radius   = 12
+ *   canvas   = 900 × 600
  */
 
 const { Ball, GRAVITY, DAMPING, BALL_RADIUS, CANVAS_WIDTH, CANVAS_HEIGHT } = require('../src/ball');
@@ -31,13 +31,13 @@ describe('Ball constants', () => {
     expect(DAMPING).toBeCloseTo(0.8);
   });
 
-  test('BALL_RADIUS is 20', () => {
-    expect(BALL_RADIUS).toBe(20);
+  test('BALL_RADIUS is 12', () => {
+    expect(BALL_RADIUS).toBe(12);
   });
 
-  test('canvas is 600 wide and 400 tall', () => {
-    expect(CANVAS_WIDTH).toBe(600);
-    expect(CANVAS_HEIGHT).toBe(400);
+  test('canvas is 900 wide and 600 tall', () => {
+    expect(CANVAS_WIDTH).toBe(900);
+    expect(CANVAS_HEIGHT).toBe(600);
   });
 });
 
@@ -78,8 +78,9 @@ describe('Ball – gravity', () => {
     ball.update();
 
     // Assert
-    expect(ball.position.x).toBeCloseTo(302);
-    expect(ball.position.y).toBeCloseTo(103 + 0.5); // gravity adds 0.5 to vy, new vy=3.5 → y=103.5
+    // gravity adds 0.5 to vy → vy=3.5; then friction (×0.988): vx=1.976, vy=3.458
+    expect(ball.position.x).toBeCloseTo(300 + 2 * 0.988);   // 301.976
+    expect(ball.position.y).toBeCloseTo(100 + 3.5 * 0.988); // 103.458
   });
 });
 
@@ -155,58 +156,60 @@ describe('Ball – top-edge bounce', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Left-edge bounce
+// Left-edge wrap (horizontal wrap replaces bounce)
 // ---------------------------------------------------------------------------
-describe('Ball – left-edge bounce', () => {
-  test('ball bounces off left edge with damping', () => {
-    // Arrange
-    const ball = new Ball({ x: BALL_RADIUS, y: 200 }, { x: -6, y: 0 });
+describe('Ball – left-edge wrap', () => {
+  test('ball teleports to right side when crossing left boundary', () => {
+    // Arrange – ball past the left boundary (x < -BALL_RADIUS)
+    const ball = new Ball({ x: -BALL_RADIUS - 1, y: 200 }, { x: -6, y: 0 });
 
     // Act
     ball.checkBounds();
 
-    // Assert
-    expect(ball.velocity.x).toBeCloseTo(6 * 0.8);
+    // Assert – position wraps to opposite side; velocity is unchanged (no damping on wrap)
+    expect(ball.position.x).toBeCloseTo(CANVAS_WIDTH + BALL_RADIUS - 1);
+    expect(ball.velocity.x).toBeCloseTo(-6);
   });
 
-  test('ball position is corrected at left edge', () => {
-    // Arrange
-    const ball = new Ball({ x: BALL_RADIUS - 2, y: 200 }, { x: -3, y: 0 });
+  test('ball position wraps when crossing left boundary', () => {
+    // Arrange – ball clearly past the left boundary
+    const ball = new Ball({ x: -BALL_RADIUS - 2, y: 200 }, { x: -3, y: 0 });
 
     // Act
     ball.checkBounds();
 
-    // Assert
-    expect(ball.position.x).toBeGreaterThanOrEqual(BALL_RADIUS);
+    // Assert – position teleported to the right side of canvas
+    expect(ball.position.x).toBeCloseTo(CANVAS_WIDTH + BALL_RADIUS - 1);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Right-edge bounce
+// Right-edge wrap (horizontal wrap replaces bounce)
 // ---------------------------------------------------------------------------
-describe('Ball – right-edge bounce', () => {
-  test('ball bounces off right edge with damping', () => {
-    // Arrange
-    const ball = new Ball({ x: CANVAS_WIDTH - BALL_RADIUS, y: 200 }, { x: 7, y: 0 });
+describe('Ball – right-edge wrap', () => {
+  test('ball teleports to left side when crossing right boundary', () => {
+    // Arrange – ball past the right boundary (x > CANVAS_WIDTH + BALL_RADIUS)
+    const ball = new Ball({ x: CANVAS_WIDTH + BALL_RADIUS + 1, y: 200 }, { x: 7, y: 0 });
 
     // Act
     ball.checkBounds();
 
-    // Assert
-    expect(ball.velocity.x).toBeCloseTo(-7 * 0.8);
+    // Assert – position wraps to opposite side; velocity is unchanged (no damping on wrap)
+    expect(ball.position.x).toBeCloseTo(-BALL_RADIUS + 1);
+    expect(ball.velocity.x).toBeCloseTo(7);
   });
 
-  test('ball position is corrected at right edge', () => {
+  test('ball position wraps when crossing right boundary', () => {
     // Arrange
     const ball = new Ball(
-      { x: CANVAS_WIDTH - BALL_RADIUS + 4, y: 200 },
+      { x: CANVAS_WIDTH + BALL_RADIUS + 4, y: 200 },
       { x: 5, y: 0 }
     );
 
     // Act
     ball.checkBounds();
 
-    // Assert
-    expect(ball.position.x).toBeLessThanOrEqual(CANVAS_WIDTH - BALL_RADIUS);
+    // Assert – position teleported to the left side of canvas
+    expect(ball.position.x).toBeCloseTo(-BALL_RADIUS + 1);
   });
 });

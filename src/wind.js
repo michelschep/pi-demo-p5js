@@ -27,7 +27,7 @@ function calculateWind(frameCount) {
  * Compute a 2-D wind vector from compass bearing and strength.
  *
  * Compass convention: 0° = North (up on canvas, y negative), clockwise.
- * Formula: { x: sin(θ) * strength, y: -cos(θ) * strength }
+ * Formula: { x: −sin(θ) * strength, y: cos(θ) * strength }
  *
  * @param  {number} angleDeg  Compass angle in degrees (0 = N, 90 = E, 180 = S, 270 = W)
  * @param  {number} strength  Wind strength (≥ 0)
@@ -36,8 +36,8 @@ function calculateWind(frameCount) {
 function getWindVector(angleDeg, strength) {
   const rad = angleDeg * (Math.PI / 180);
   return {
-    x: Math.sin(rad) * strength,
-    y: -Math.cos(rad) * strength,
+    x: -Math.sin(rad) * strength,
+    y: Math.cos(rad) * strength,
   };
 }
 
@@ -85,7 +85,7 @@ function getWindArrow(windForce) {
   };
 }
 
-// Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
+// Exported for Node.js (Jest) - guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
   module.exports = {
     calculateWind,

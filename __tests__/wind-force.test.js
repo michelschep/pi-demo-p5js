@@ -196,11 +196,11 @@ describe('getWindArrow(windForce)', () => {
 
 // ---------------------------------------------------------------------------
 // getWindVector – task 1.1 (wind-controls)
-// Formula: { x: sin(θ) * strength, y: -cos(θ) * strength }
+// Formula: { x: −sin(θ) * strength, y: cos(θ) * strength }
 // Kompasrose: 0° = Noord (omhoog op canvas), kloksgewijs
 // ---------------------------------------------------------------------------
 describe('getWindVector(angleDeg, strength)', () => {
-  test('N=0°: Noord-wind geeft {x≈0, y=-strength}', () => {
+  test('N=0°: Noord-wind geeft {x≈0, y=+strength}', () => {
     // Arrange
     const angleDeg = 0;
     const strength = 0.1;
@@ -208,13 +208,13 @@ describe('getWindVector(angleDeg, strength)', () => {
     // Act
     const vector = getWindVector(angleDeg, strength);
 
-    // Assert – sin(0)=0, -cos(0)=-1
+    // Assert – −sin(0)=0, cos(0)=+1 → y = +strength
     expect(vector.x).toBeCloseTo(0);
-    expect(vector.y).toBeCloseTo(-strength);
+    expect(vector.y).toBeCloseTo(strength);
 
   });
 
-  test('O=90°: Oost-wind geeft {x=strength, y≈0}', () => {
+  test('O=90°: Oost-wind geeft {x=−strength, y≈0}', () => {
     // Arrange
     const angleDeg = 90;
     const strength = 0.1;
@@ -222,13 +222,13 @@ describe('getWindVector(angleDeg, strength)', () => {
     // Act
     const vector = getWindVector(angleDeg, strength);
 
-    // Assert – sin(90°)=1, -cos(90°)=0
-    expect(vector.x).toBeCloseTo(strength);
+    // Assert – −sin(90°)=−1 → x = −strength, cos(90°)=0
+    expect(vector.x).toBeCloseTo(-strength);
     expect(vector.y).toBeCloseTo(0);
 
   });
 
-  test('Z=180°: Zuid-wind geeft {x≈0, y=strength}', () => {
+  test('Z=180°: Zuid-wind geeft {x≈0, y=−strength}', () => {
     // Arrange
     const angleDeg = 180;
     const strength = 0.1;
@@ -236,13 +236,13 @@ describe('getWindVector(angleDeg, strength)', () => {
     // Act
     const vector = getWindVector(angleDeg, strength);
 
-    // Assert – sin(180°)≈0, -cos(180°)=1
+    // Assert – −sin(180°)≈0, cos(180°)=−1 → y = −strength
     expect(vector.x).toBeCloseTo(0);
-    expect(vector.y).toBeCloseTo(strength);
+    expect(vector.y).toBeCloseTo(-strength);
 
   });
 
-  test('W=270°: West-wind geeft {x=-strength, y≈0}', () => {
+  test('W=270°: West-wind geeft {x=+strength, y≈0}', () => {
     // Arrange
     const angleDeg = 270;
     const strength = 0.1;
@@ -250,8 +250,8 @@ describe('getWindVector(angleDeg, strength)', () => {
     // Act
     const vector = getWindVector(angleDeg, strength);
 
-    // Assert – sin(270°)=-1, -cos(270°)=0
-    expect(vector.x).toBeCloseTo(-strength);
+    // Assert – −sin(270°)=+1 → x = +strength, cos(270°)=0
+    expect(vector.x).toBeCloseTo(strength);
     expect(vector.y).toBeCloseTo(0);
 
   });

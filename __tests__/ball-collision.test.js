@@ -10,7 +10,7 @@
  *  5. Overlap corrected → centers are exactly 2 × BALL_RADIUS apart after resolveCollision
  *
  * Constants (from src/ball.js spec):
- *   BALL_RADIUS = 20   →   collision diameter = 40
+ *   BALL_RADIUS = 12   →   collision diameter = 24
  */
 
 const { Ball, BALL_RADIUS } = require('../src/ball');
@@ -34,9 +34,9 @@ describe('Ball.resolveCollision – collision detection', () => {
   });
 
   test('velocity changes when two balls overlap (distance < 2 × BALL_RADIUS)', () => {
-    // Arrange – balls 30 px apart (overlap: 40 - 30 = 10 px), moving toward each other
+    // Arrange – balls 20 px apart (overlap: 24 - 20 = 4 px), moving toward each other
     const ballA = new Ball({ x: 200, y: 200 }, { x: 4, y: 0 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -4, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -4, y: 0 });
 
     const vAxBefore = ballA.velocity.x;
     const vBxBefore = ballB.velocity.x;
@@ -53,7 +53,7 @@ describe('Ball.resolveCollision – collision detection', () => {
   test('resolveCollision is called symmetrically (both balls affected)', () => {
     // Arrange
     const ballA = new Ball({ x: 200, y: 200 }, { x: 5, y: 0 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -5, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -5, y: 0 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -86,8 +86,8 @@ describe('Ball.resolveCollision – no collision when out of range', () => {
   test('velocities are unchanged when balls are moving away from each other even if touching', () => {
     // Arrange – exactly at collision boundary, already separating
     const ballA = new Ball({ x: 200, y: 200 }, { x: -3, y: 0 }); // moving left (away)
-    const ballB = new Ball({ x: 240, y: 200 }, { x:  3, y: 0 }); // moving right (away)
-    // distance = 40 = 2 × BALL_RADIUS; relative velocity along axis points away
+    const ballB = new Ball({ x: 224, y: 200 }, { x:  3, y: 0 }); // moving right (away)
+    // distance = 24 = 2 × BALL_RADIUS; relative velocity along axis points away
 
     // Act
     ballA.resolveCollision(ballB);
@@ -104,9 +104,9 @@ describe('Ball.resolveCollision – no collision when out of range', () => {
 describe('Ball.resolveCollision – head-on collision', () => {
   test('head-on along x-axis: velocities are fully swapped', () => {
     // Arrange – balls aligned on x-axis, moving directly toward each other
-    // distance = 30 px (< 40, so overlapping)
+    // distance = 20 px (< 24, so overlapping)
     const ballA = new Ball({ x: 200, y: 200 }, { x:  5, y: 0 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -5, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -5, y: 0 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -119,7 +119,7 @@ describe('Ball.resolveCollision – head-on collision', () => {
   test('head-on along y-axis: velocities are fully swapped', () => {
     // Arrange – balls aligned on y-axis, moving toward each other
     const ballA = new Ball({ x: 200, y: 200 }, { x: 0, y:  6 });
-    const ballB = new Ball({ x: 200, y: 230 }, { x: 0, y: -6 });
+    const ballB = new Ball({ x: 200, y: 220 }, { x: 0, y: -6 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -132,7 +132,7 @@ describe('Ball.resolveCollision – head-on collision', () => {
   test('head-on: y-velocity (perpendicular) is not altered', () => {
     // Arrange – head-on along x, each has identical y-velocity
     const ballA = new Ball({ x: 200, y: 200 }, { x:  4, y: 2 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -4, y: 2 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -4, y: 2 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -152,7 +152,7 @@ describe('Ball.resolveCollision – oblique collision', () => {
     // ballA moves diagonally right+down; ballB moves diagonally left+down
     // Tangential (y) component should be unchanged for both
     const ballA = new Ball({ x: 200, y: 200 }, { x:  3, y: 4 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -3, y: 4 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -3, y: 4 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -166,8 +166,8 @@ describe('Ball.resolveCollision – oblique collision', () => {
 
   test('oblique 45-degree approach: only normal component is exchanged', () => {
     // Arrange – balls offset diagonally; normal vector is at 45 degrees
-    // Place balls so their centres are exactly 30 px apart diagonally
-    const offset = 30 / Math.SQRT2; // ≈ 21.21
+    // Place balls so their centres are exactly 20 px apart diagonally
+    const offset = 20 / Math.SQRT2; // ≈ 21.21
     const ballA = new Ball({ x: 200,          y: 200 },          { x:  3, y:  3 });
     const ballB = new Ball({ x: 200 + offset, y: 200 + offset }, { x: -3, y: -3 });
 
@@ -193,9 +193,9 @@ describe('Ball.resolveCollision – oblique collision', () => {
 // ---------------------------------------------------------------------------
 describe('Ball.resolveCollision – overlap correction', () => {
   test('centers are exactly 2 × BALL_RADIUS apart after resolveCollision', () => {
-    // Arrange – balls clearly overlapping (distance 30 < 40)
+    // Arrange – balls clearly overlapping (distance 20 < 24)
     const ballA = new Ball({ x: 200, y: 200 }, { x:  4, y: 0 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -4, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -4, y: 0 });
 
     // Act
     ballA.resolveCollision(ballB);
@@ -205,16 +205,16 @@ describe('Ball.resolveCollision – overlap correction', () => {
   });
 
   test('each ball is pushed by half the overlap along the normal', () => {
-    // Arrange – balls 30 px apart on x-axis; overlap = 40 - 30 = 10 → each moved 5 px
+    // Arrange – balls 20 px apart on x-axis; overlap = 24 - 20 = 4 → each moved 2 px
     const ballA = new Ball({ x: 200, y: 200 }, { x:  3, y: 0 });
-    const ballB = new Ball({ x: 230, y: 200 }, { x: -3, y: 0 });
+    const ballB = new Ball({ x: 220, y: 200 }, { x: -3, y: 0 });
 
     // Act
     ballA.resolveCollision(ballB);
 
-    // Assert – ballA pushed 5 px to the left, ballB pushed 5 px to the right
-    expect(ballA.position.x).toBeCloseTo(195); // 200 - 5
-    expect(ballB.position.x).toBeCloseTo(235); // 230 + 5
+    // Assert – ballA pushed 2 px to the left, ballB pushed 2 px to the right
+    expect(ballA.position.x).toBeCloseTo(198); // 200 - 2
+    expect(ballB.position.x).toBeCloseTo(222); // 220 + 2
   });
 
   test('no position correction when balls are not overlapping', () => {

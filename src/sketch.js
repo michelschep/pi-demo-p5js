@@ -38,6 +38,7 @@ function setup() {
 
 function draw() {
   background(15, 17, 23);
+  drawFieldBorder();
 
   // Task 5.1: Replace calculateWind(frameCount) with user-controlled getWindState()
   const windState  = typeof getWindState === 'function'
@@ -69,7 +70,7 @@ function draw() {
 
     // --- Task 2.2: Fibonacci label centred inside the ball ---
     noStroke();
-    textSize(11);
+    textSize(8);
     textAlign(CENTER, CENTER);
     text(ball.fibonacciNumber, ball.position.x, ball.position.y);
   }
@@ -89,6 +90,18 @@ function draw() {
 /** Spawn a new ball at the mouse position when the canvas is clicked. */
 function mousePressed() {
   spawnBallOnClick(balls, mouseX, mouseY, CANVAS_WIDTH, CANVAS_HEIGHT);
+}
+
+/**
+ * Draw a cornflower-blue border around the full canvas.
+ */
+function drawFieldBorder() {
+  push();
+  noFill();
+  stroke(88, 166, 255);
+  strokeWeight(2);
+  rect(1, 1, width - 2, height - 2);
+  pop();
 }
 
 /**

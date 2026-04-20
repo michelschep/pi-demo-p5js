@@ -13,10 +13,11 @@ let _fibIndex = 0;
 
 const GRAVITY = { x: 0, y: 0.5 };
 const DAMPING = 0.8;
-const BALL_RADIUS = 20;
+const BALL_RADIUS = 12;
 const STROKE_WEIGHT = 3;
-const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 400;
+const CANVAS_WIDTH = 900;
+const CANVAS_HEIGHT = 600;
+const FRICTION = 0.988;
 
 /**
  * Convert HSB (Hue-Saturation-Brightness) to an RGB object.
@@ -79,6 +80,15 @@ class Ball {
   /** Apply gravity then move the ball by its current velocity. */
   update() {
     this.applyGravity();
+
+    // Apply friction every frame
+    this.velocity.x *= FRICTION;
+    this.velocity.y *= FRICTION;
+
+    // Micro-stop: zero out sub-threshold velocities
+    if (Math.abs(this.velocity.x) < 0.1) this.velocity.x = 0;
+    if (Math.abs(this.velocity.y) < 0.1) this.velocity.y = 0;
+
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
   }
@@ -150,16 +160,14 @@ class Ball {
       this.position.y = BALL_RADIUS;
     }
 
-    // Left edge
-    if (this.position.x - BALL_RADIUS <= 0) {
-      this.velocity.x = Math.abs(this.velocity.x) * DAMPING;
-      this.position.x = BALL_RADIUS;
+    // Horizontal wrap — left edge
+    if (this.position.x < -BALL_RADIUS) {
+      this.position.x = CANVAS_WIDTH + BALL_RADIUS - 1;
     }
 
-    // Right edge
-    if (this.position.x + BALL_RADIUS >= CANVAS_WIDTH) {
-      this.velocity.x = -Math.abs(this.velocity.x) * DAMPING;
-      this.position.x = CANVAS_WIDTH - BALL_RADIUS;
+    // Horizontal wrap — right edge
+    if (this.position.x > CANVAS_WIDTH + BALL_RADIUS) {
+      this.position.x = -BALL_RADIUS + 1;
     }
   }
 }
@@ -174,5 +182,5 @@ function resetFibIndex() {
 
 // Exported for Node.js (Jest) — guard prevents ReferenceError in the browser
 if (typeof module !== 'undefined') {
-  module.exports = { Ball, resetFibIndex, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT };
+  module.exports = { Ball, resetFibIndex, hsbToRgb, GRAVITY, DAMPING, BALL_RADIUS, STROKE_WEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT, FRICTION };
 }
